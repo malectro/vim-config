@@ -12,10 +12,10 @@ filetype plugin indent on
 " Configuration
 " -------------
 
-colorscheme molokai
+colorscheme distinguished
 set background=dark
 set guifont=Inconsolata:h24     " Huge and not always there ...
-set guifont=Monaco:h18
+set guifont=Monaco:h14
 set guioptions-=T               " Remove GUI toolbar
 set visualbell                  " Suppress audio/visual error bell
 set notimeout                   " No command timeout
@@ -248,7 +248,11 @@ au BufRead,BufNewFile *.god set filetype=ruby
 au BufRead,BufNewFile Gemfile* set filetype=ruby
 au BufRead,BufNewFile Guardfile* set filetype=ruby
 au BufRead,BufNewFile Vagrantfile set filetype=ruby
+au BufRead,BufNewFile Podfile set filetype=ruby
 au BufRead,BufNewFile soloistrc set filetype=ruby
+
+" Go
+set rtp+=$GOROOT/misc/vim
 
 " Java, PHP
 autocmd BufWritePre *.java,*.php :%s/\s\+$//e
