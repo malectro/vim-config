@@ -1,13 +1,55 @@
 " Pathogen
 " --------
 
-filetype off                    " Avoid a Vim/Pathogen bug
-call pathogen#helptags()
-call pathogen#infect()
+" filetype off                    " Avoid a Vim/Pathogen bug
+" call pathogen#helptags()
+" call pathogen#infect()
 
-set nocompatible                " Don't maintain compatibility with vi
-syntax on                       " Highlight known syntaxes
-filetype plugin indent on
+" set nocompatible                " Don't maintain compatibility with vi
+" syntax on                       " Highlight known syntaxes
+" filetype plugin indent on
+
+
+" Plug
+" ----
+
+call plug#begin('~/.vim/plugged')
+
+" functionality
+Plug 'mileszs/ack.vim'
+Plug 'morhetz/gruvbox'
+Plug 'scrooloose/nerdcommenter'
+Plug 'scrooloose/nerdtree'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-surround'
+Plug 'kana/vim-textobj-user'
+Plug 'tpope/vim-unimpaired'
+
+" lint
+Plug 'w0rp/ale'
+Plug 'nvie/vim-flake8'
+
+" syntax
+Plug 'Glench/Vim-Jinja2-Syntax'
+Plug 'pangloss/vim-javascript'
+Plug 'maksimr/vim-jsbeautify'
+Plug 'mxw/vim-jsx'
+Plug 'plasticboy/vim-markdown'
+Plug 'digitaltoad/vim-pug'
+
+" themes
+Plug 'ayu-theme/ayu-vim'
+Plug 'vim-scripts/molokai'
+Plug 'mhartington/oceanic-next'
+Plug 'joshdick/onedark.vim'
+Plug 'dracula/vim'
+Plug 'altercation/vim-colors-solarized'
+Plug 'tpope/vim-vividchalk'
+
+" Plug 'mtscout6/syntastic-local-eslint.vim'
+
+call plug#end()
 
 
 " Configuration
@@ -300,16 +342,6 @@ let g:javascript_plugin_flow = 0
 " let g:syntastic_jsx_checkers = ['eslint']
 " let g:syntastic_python_checkers = ['flake8']
 " let g:syntastic_python_flake8_args='--max-line-length=120 --ignore=E402,E731,E711'
-
-
-" Plug
-" ----
-
-" call plug#begin('~/.vim/plugged')
-
-" Plug 'mtscout6/syntastic-local-eslint.vim'
-
-" call plug#end()
 
 
 " .vimrc.local Options
