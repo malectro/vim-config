@@ -17,6 +17,7 @@ call plug#begin('~/.vim/plugged')
 
 " functionality
 Plug 'mileszs/ack.vim'
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'morhetz/gruvbox'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
