@@ -75,6 +75,13 @@ require('gitsigns').setup {
   },
 }
 
+-- Devicons
+require'nvim-web-devicons'.setup {
+ -- globally enable default icons (default to false)
+ -- will get overriden by `get_icons` option
+ default = true;
+}
+
 -- Telescope
 require('telescope').setup {
   defaults = {
@@ -92,6 +99,15 @@ require('telescope').setup {
 
 -- Enable telescope fzf native
 require('telescope').load_extension 'fzf'
+
+-- Enable telescope file browser
+-- require("telescope").load_extension "file_browser"
+-- vim.api.nvim_set_keymap(
+--   "n",
+--   "<leader>fb",
+--   ":Telescope file_browser",
+--   { noremap = true }
+-- )
 
 --Add leader shortcuts
 vim.api.nvim_set_keymap('n', '<leader>b', [[<cmd>lua require('telescope.builtin').buffers()<CR>]], { noremap = true, silent = true })
@@ -159,7 +175,22 @@ require('nvim-treesitter.configs').setup {
     },
   },
   playground = {
-    enable = false,
+    enable = true,
+    disable = {},
+    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+    persist_queries = false, -- Whether the query persists across vim sessions
+    keybindings = {
+      toggle_query_editor = 'o',
+      toggle_hl_groups = 'i',
+      toggle_injected_languages = 't',
+      toggle_anonymous_nodes = 'a',
+      toggle_language_display = 'I',
+      focus_language = 'f',
+      unfocus_language = 'F',
+      update = 'R',
+      goto_node = '<cr>',
+      show_help = '?',
+    },
   },
 }
 
@@ -184,10 +215,10 @@ local on_attach = function(_, bufnr)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>so', [[<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>]], opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>f', '<cmd>lua vim.lsp.buf.format({ async = false })<CR>', opts)
   vim.cmd [[ command! Format execute 'lua vim.lsp.buf.formatting()' ]]
 end
 
@@ -318,6 +349,9 @@ require("null-ls").setup {
   root_dir = lspconfig.util.root_pattern(".prettierrc"),
 }
 
+-- Nvim Tree Setup
+-- require("nvim-tree").setup()
+
 -- NeoTree setup
 require('neo-tree').setup {
   filesystem = {
@@ -326,6 +360,7 @@ require('neo-tree').setup {
         ["<bs>"] = "navigate_up",
         ["U"] = "navigate_up",
 				["T"] = "open_tab",
+        ["/"] = "noop",
       }
     },
 		commands = {
@@ -339,7 +374,8 @@ require('neo-tree').setup {
 		},
   },
 }
-vim.cmd([[nnoremap \ :NeoTreeRevealToggle<cr>]])
+
+vim.cmd([[nnoremap \ :Neotree toggle reveal<cr>]])
 
 -- trying this?
 vim.cmd([[ command! -nargs=1 Browse silent exec '!open "<args>"' ]])

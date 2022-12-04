@@ -13,9 +13,11 @@ return require('packer').startup(function()
   use 'numToStr/Comment.nvim' -- "gc" to comment visual regions/lines
   -- NOTE (kyle): not sure what the point of this is
   -- use 'ludovicchabant/vim-gutentags' -- Automatic tags management
+  use 'nvim-tree/nvim-web-devicons'
   -- UI to select things (files, grep results, open buffers...)
   use { 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } }
-  use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
+  use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
+  use { "nvim-telescope/telescope-file-browser.nvim" }
   use 'mjlbach/onedark.nvim' -- Theme inspired by Atom
   use 'nvim-lualine/lualine.nvim' -- Fancier statusline
   -- Add indentation guides even on blank lines
@@ -32,7 +34,7 @@ return require('packer').startup(function()
   use 'hrsh7th/cmp-nvim-lsp'
   use 'saadparwaiz1/cmp_luasnip'
   use 'L3MON4D3/LuaSnip' -- Snippets plugin
-  use 'malectro/outer-sunset'
+  use '~/Projects/outer-sunset'
   use {
     'jose-elias-alvarez/null-ls.nvim',
     config = function()
@@ -40,13 +42,25 @@ return require('packer').startup(function()
     end,
     requires = { "nvim-lua/plenary.nvim" },
   }
+
+  use {
+    'nvim-tree/nvim-tree.lua',
+    requires = {
+      'nvim-tree/nvim-web-devicons', -- optional, for file icons
+    },
+  }
+
   use {
     "nvim-neo-tree/neo-tree.nvim",
+    branch = "v2.x",
     requires = { 
       "nvim-lua/plenary.nvim",
       -- enabling this requires a patched font
       -- "kyazdani42/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim" 
     },
+    config = function ()
+      vim.cmd([[ let g:neo_tree_remove_legacy_commands = 1 ]])
+    end
   }
 end)

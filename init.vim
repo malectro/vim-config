@@ -71,6 +71,7 @@ set background=dark
 if exists('+guifont')
   " set guifont=Operator\ Mono:h16
   " set guifont=Fira\ Code:h16
-  set guifont=Space\ Mono:h14
-  " set guifont=Monaco:h14
+  " set guifont=Space\ Mono:h14
+  " set guifont=SpaceMono\ Nerd\ Font:h14
+  set guifont=Monaco:h14
 endif
