@@ -337,7 +337,7 @@ cmp.setup {
 require("null-ls").setup {
   sources = {
     require("null-ls").builtins.formatting.prettier.with({
-      filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'css', 'less', 'json' },
+      filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'css', 'less', 'json', 'html' },
     }),
     require("null-ls").builtins.diagnostics.eslint,
     require("null-ls").builtins.formatting.black,

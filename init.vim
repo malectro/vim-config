@@ -26,6 +26,7 @@ set noswapfile                  " No swap file
 set nobackup                    " No backup file
 set nowritebackup
 
+let g:rust_recommended_style=0  " prevents default tabstop of 4 in Rust
 
 "
 " Mappings

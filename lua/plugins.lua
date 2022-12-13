@@ -15,9 +15,8 @@ return require('packer').startup(function()
   -- use 'ludovicchabant/vim-gutentags' -- Automatic tags management
   use 'nvim-tree/nvim-web-devicons'
   -- UI to select things (files, grep results, open buffers...)
-  use { 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } }
+  use { 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim', 'nvim-tree/nvim-web-devicons' } }
   use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
-  use { "nvim-telescope/telescope-file-browser.nvim" }
   use 'mjlbach/onedark.nvim' -- Theme inspired by Atom
   use 'nvim-lualine/lualine.nvim' -- Fancier statusline
   -- Add indentation guides even on blank lines
@@ -56,7 +55,7 @@ return require('packer').startup(function()
     requires = { 
       "nvim-lua/plenary.nvim",
       -- enabling this requires a patched font
-      -- "kyazdani42/nvim-web-devicons", -- not strictly required, but recommended
+      "kyazdani42/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim" 
     },
     config = function ()
