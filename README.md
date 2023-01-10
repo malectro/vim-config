@@ -13,8 +13,9 @@ Telescope needs [rg (aka ripgrep)](https://github.com/BurntSushi/ripgrep) to sea
 
     brew install ripgrep
 
-Install optional Space Mono font https://fonts.google.com/specimen/Space+Mono
-A few other fonts are commented out, and you can activate them in the `init.vim`. Fira Code is particularly nice but costs money.
+Install a nerd font https://www.nerdfonts.com/font-downloads 
+(I like Meslo (cmd+f for Menlo).)
+A few other fonts are commented out, and you can activate them in the `init.vim`.
 
 Open nvim (ignoring any errors) and run:
 
