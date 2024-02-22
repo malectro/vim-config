@@ -27,7 +27,6 @@ return require('packer').startup(function()
   use 'nvim-treesitter/nvim-treesitter'
   -- Additional textobjects for treesitter
   use 'nvim-treesitter/nvim-treesitter-textobjects'
-  use 'nvim-treesitter/playground'
   use 'neovim/nvim-lspconfig' -- Collection of configurations for built-in LSP client
   use 'hrsh7th/nvim-cmp' -- Autocompletion plugin
   use 'hrsh7th/cmp-nvim-lsp'
@@ -62,4 +61,13 @@ return require('packer').startup(function()
       vim.cmd([[ let g:neo_tree_remove_legacy_commands = 1 ]])
     end
   }
+
+  use {
+    "andymass/vim-matchup",  
+    setup = function()
+      vim.g.matchup_matchparen_offscreen = { method = "popup" }
+    end,
+  }
+
+  -- use 'github/copilot.vim'
 end)

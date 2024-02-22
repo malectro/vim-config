@@ -2,12 +2,14 @@
 " float color
 " trouble?
 
-" Load Packer plugins
-lua require('plugins')
-lua require('kickstart')
+if !exists('g:vscode')
+  " Load Packer plugins
+  lua require('plugins')
+  lua require('kickstart')
 
-" Load nvim-lsp configs
-" lua require('lsp')
+  " Load nvim-lsp configs
+  " lua require('lsp')
+endif
 
 
 "
@@ -16,6 +18,7 @@ lua require('kickstart')
 
 set tabstop=2                   " Tab settings
 set shiftwidth=2
+set textwidth=90
 set expandtab
 set smarttab
 set autoindent
@@ -75,4 +78,10 @@ if exists('+guifont')
   " set guifont=Space\ Mono:h14
   " set guifont=SpaceMono\ Nerd\ Font:h14
   set guifont=Monaco:h14
+endif
+
+if !exists('g:vscode')
+  " Copilot
+  imap <silent><script><expr> <S-tab> copilot#Accept("\<CR>")
+  let g:copilot_no_tab_map = v:true
 endif
