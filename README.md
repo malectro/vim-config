@@ -21,6 +21,14 @@ Open nvim (ignoring any errors) and run:
 
     :PackerInstall
 
+After this you'll probably want to repopen neovim and verify that there are no longer
+errors. When you start editing a file in a new language, you'll want to install the
+TreeSitter stuff for it.
+
+    :TSInstall
+
+After a moment, the highlighting of that language should improve.
+
 
 ## On Packer 
 
