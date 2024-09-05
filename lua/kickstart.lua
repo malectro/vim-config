@@ -212,7 +212,7 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 -- Enable the following language servers
-local servers = { 'rust_analyzer', 'gopls' }
+local servers = { 'rust_analyzer', 'gopls', 'lua_ls' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
@@ -242,33 +242,6 @@ lspconfig.tsserver.setup {
 local runtime_path = vim.split(package.path, ';')
 table.insert(runtime_path, 'lua/?.lua')
 table.insert(runtime_path, 'lua/?/init.lua')
-
-lspconfig.sumneko_lua.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  settings = {
-    Lua = {
-      runtime = {
-        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-        version = 'LuaJIT',
-        -- Setup your lua path
-        path = runtime_path,
-      },
-      diagnostics = {
-        -- Get the language server to recognize the `vim` global
-        globals = { 'vim' },
-      },
-      workspace = {
-        -- Make the server aware of Neovim runtime files
-        library = vim.api.nvim_get_runtime_file('', true),
-      },
-      -- Do not send telemetry data containing a randomized but unique identifier
-      telemetry = {
-        enable = false,
-      },
-    },
-  },
-}
 
 -- luasnip setup
 local luasnip = require 'luasnip'
@@ -362,6 +335,7 @@ require('neo-tree').setup {
 
 vim.cmd([[nnoremap \ :Neotree toggle reveal<cr>]])
 
+-- NO longer sure what this does?
 -- trying this?
-vim.cmd([[ command! -nargs=1 Browse silent exec '!open "<args>"' ]])
+-- vim.cmd([[ command! -nargs=1 Browse silent exec '!open "<args>"' ]])
 vim.g.nvim_tree_disable_netrw = 0

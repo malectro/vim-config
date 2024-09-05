@@ -33,6 +33,15 @@ return require('packer').startup(function()
   use 'saadparwaiz1/cmp_luasnip'
   use 'L3MON4D3/LuaSnip' -- Snippets plugin
   use '~/Projects/outer-sunset'
+
+  use {
+    "pmizio/typescript-tools.nvim",
+    requires = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+    -- config = function()
+    --   require("typescript-tools").setup {}
+    -- end,
+  }
+
   use {
     'jose-elias-alvarez/null-ls.nvim',
     config = function()
