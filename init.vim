@@ -2,16 +2,6 @@
 " float color
 " trouble?
 
-if !exists('g:vscode')
-  " Load Packer plugins
-  lua require('plugins')
-  lua require('kickstart')
-
-  " Load nvim-lsp configs
-  " lua require('lsp')
-endif
-
-
 "
 " Behavior Configuration
 " ----------------------
@@ -37,6 +27,7 @@ let g:rust_recommended_style=0  " prevents default tabstop of 4 in Rust
 
 " Special key for prefixing helpful commands
 let mapleader = ","
+let maplocalleader = ","
 
 " Reload .vimrc
 map <leader>rv  :source ~/.config/nvim/init.vim<CR>
@@ -56,6 +47,9 @@ vmap <S-tab>    <gv
 " set clipboard+=unnamedplus
 " vnoremap <C-c>  "+y
 vnoremap <C-c> "*y
+
+" Make location list close after making a selection
+" :autocmd FileType qf nmap <buffer> <cr> <cr>:lcl<cr>
 
 " colorscheme molokai
 colorscheme OuterSunset
@@ -81,7 +75,10 @@ if exists('+guifont')
 endif
 
 if !exists('g:vscode')
-  " Copilot
-  imap <silent><script><expr> <S-tab> copilot#Accept("\<CR>")
-  let g:copilot_no_tab_map = v:true
+  " Load Packer plugins
+  lua require('plugins2')
+  lua require('kickstart')
+
+  " Load nvim-lsp configs
+  " lua require('lsp')
 endif
