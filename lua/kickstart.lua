@@ -347,3 +347,38 @@ vim.cmd([[nnoremap \ :Neotree toggle reveal<cr>]])
 -- trying this?
 -- vim.cmd([[ command! -nargs=1 Browse silent exec '!open "<args>"' ]])
 vim.g.nvim_tree_disable_netrw = 0
+
+-- CodeCampanion
+require('codecompanion').setup {
+  display = {
+    chat = {
+      render_headers = false,
+    }
+  },
+  adapters = {
+    openai = function()
+      return require("codecompanion.adapters").extend("openai", {
+        env = {
+          api_key = "cmd:op read op://personal/OpenAI/CodeCompanionApiKey --no-newline",
+        },
+      })
+    end,
+  },
+  strategies = {
+    chat = {
+      adapter = "anthropic",
+    },
+    inline = {
+      adapter = "copilot",
+    },
+  },
+}
+
+vim.api.nvim_set_keymap("n", "<C-a>", "<cmd>CodeCompanionActions<cr>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("v", "<C-a>", "<cmd>CodeCompanionActions<cr>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<LocalLeader>aa", "<cmd>CodeCompanionChat Toggle<cr>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("v", "<LocalLeader>aa", "<cmd>CodeCompanionChat Toggle<cr>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("v", "ga", "<cmd>CodeCompanionChat Add<cr>", { noremap = true, silent = true })
+
+-- Expand 'cc' into 'CodeCompanion' in the command line
+vim.cmd([[cab cc CodeCompanion]])
