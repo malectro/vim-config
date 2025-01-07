@@ -93,6 +93,8 @@ require('telescope').setup {
     },
     file_ignore_patterns = {
       "node_modules",
+      "apps/android",
+      "apps/ios"
     },
   },
 }
@@ -128,6 +130,7 @@ vim.api.nvim_set_keymap('n', '<leader>?', [[<cmd>lua require('telescope.builtin'
 require('nvim-treesitter.configs').setup {
   highlight = {
     enable = true, -- false will disable the whole extension
+    additional_vim_regex_highlighting = false,
   },
   incremental_selection = {
     enable = true,
@@ -242,6 +245,11 @@ lspconfig.denols.setup {
 lspconfig.ts_ls.setup {
   on_attach = on_attach,
   capabilities = capabilities,
+  cmd = { 'typescript-language-server',  '--stdio' },
+  init_options = {
+    hostInfo = "neovim",
+    maxTsServerMemory = 8192,
+  },
   root_dir = lspconfig.util.root_pattern("tsconfig.json"),
 }
 
@@ -366,7 +374,7 @@ require('codecompanion').setup {
   },
   strategies = {
     chat = {
-      adapter = "anthropic",
+      adapter = "openai",
     },
     inline = {
       adapter = "copilot",
