@@ -124,6 +124,7 @@ vim.api.nvim_set_keymap('n', '<leader>/', [[<cmd>lua require('telescope.builtin'
 vim.api.nvim_set_keymap('n', '<leader>sp', [[<cmd>lua require('telescope.builtin').live_grep()<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>so', [[<cmd>lua require('telescope.builtin').tags{ only_current_buffer = true }<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>?', [[<cmd>lua require('telescope.builtin').oldfiles()<CR>]], { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>ee', [[<cmd>lua require('telescope.builtin').diagnostics()<CR>]], { noremap = true, silent = true })
 
 -- Treesitter configuration
 -- Parsers must be installed manually via :TSInstall
@@ -308,7 +309,7 @@ cmp.setup {
 -- vim: ts=2 sts=2 sw=2 et
 
 -- null-ls setup
-require("null-ls").setup {
+--[[ require("null-ls").setup {
   sources = {
     require("null-ls").builtins.formatting.prettier.with({
       filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'css', 'less', 'json', 'html' },
@@ -321,7 +322,7 @@ require("null-ls").setup {
     -- require("null-ls").builtins.formatting.deno_fmt,
   },
   root_dir = lspconfig.util.root_pattern(".prettierrc"),
-}
+} ]]
 
 -- Nvim Tree Setup
 -- require("nvim-tree").setup()

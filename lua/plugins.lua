@@ -43,14 +43,6 @@ return require('packer').startup(function()
   }
 
   use {
-    'jose-elias-alvarez/null-ls.nvim',
-    config = function()
-        require("null-ls").setup()
-    end,
-    requires = { "nvim-lua/plenary.nvim" },
-  }
-
-  use {
     'nvim-tree/nvim-tree.lua',
     requires = {
       'nvim-tree/nvim-web-devicons', -- optional, for file icons
@@ -76,6 +68,17 @@ return require('packer').startup(function()
     setup = function()
       vim.g.matchup_matchparen_offscreen = { method = "popup" }
     end,
+  }
+
+  use {
+    "alex-popov-tech/store.nvim",
+    dependencies = {
+      "OXY2DEV/markview.nvim", -- optional, for pretty readme preview / help window
+    },
+    cmd = "Store",
+    keys = {
+      { "<leader>s", "<cmd>Store<cr>", desc = "Open Plugin Store" },
+    }
   }
 
   -- use 'github/copilot.vim'
