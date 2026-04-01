@@ -59,10 +59,13 @@ vim.cmd [[
 ]]
 
 --Map blankline
-vim.g.indent_blankline_char = '┊'
-vim.g.indent_blankline_filetype_exclude = { 'help', 'packer' }
-vim.g.indent_blankline_buftype_exclude = { 'terminal', 'nofile' }
-vim.g.indent_blankline_show_trailing_blankline_indent = false
+require('ibl').setup {
+  indent = { char = '┊' },
+  exclude = {
+    filetypes = { 'help', 'packer' },
+    buftypes = { 'terminal', 'nofile' },
+  },
+}
 
 -- Gitsigns
 require('gitsigns').setup {
@@ -127,138 +130,98 @@ vim.api.nvim_set_keymap('n', '<leader>?', [[<cmd>lua require('telescope.builtin'
 vim.api.nvim_set_keymap('n', '<leader>ee', [[<cmd>lua require('telescope.builtin').diagnostics()<CR>]], { noremap = true, silent = true })
 
 -- Treesitter configuration
+-- nvim-treesitter v1.x: highlight and indent are enabled by default.
 -- Parsers must be installed manually via :TSInstall
-require('nvim-treesitter.configs').setup {
-  highlight = {
-    enable = true, -- false will disable the whole extension
-    additional_vim_regex_highlighting = false,
-  },
-  incremental_selection = {
-    enable = true,
-    keymaps = {
-      init_selection = 'gnn',
-      node_incremental = 'grn',
-      scope_incremental = 'grc',
-      node_decremental = 'grm',
-    },
-  },
-  indent = {
-    enable = true,
-  },
-  textobjects = {
-    select = {
-      enable = true,
-      lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
-      keymaps = {
-        -- You can use the capture groups defined in textobjects.scm
-        ['af'] = '@function.outer',
-        ['if'] = '@function.inner',
-        ['ac'] = '@class.outer',
-        ['ic'] = '@class.inner',
-      },
-    },
-    move = {
-      enable = true,
-      set_jumps = true, -- whether to set jumps in the jumplist
-      goto_next_start = {
-        [']m'] = '@function.outer',
-        [']]'] = '@class.outer',
-      },
-      goto_next_end = {
-        [']M'] = '@function.outer',
-        [']['] = '@class.outer',
-      },
-      goto_previous_start = {
-        ['[m'] = '@function.outer',
-        ['[['] = '@class.outer',
-      },
-      goto_previous_end = {
-        ['[M'] = '@function.outer',
-        ['[]'] = '@class.outer',
-      },
-    },
-  },
-  matchup = {
-    enable = true,
-  },
+
+-- Textobject config (lookahead, set_jumps)
+require('nvim-treesitter-textobjects').setup {
+  select = { lookahead = true },
+  move = { set_jumps = true },
 }
+
+-- Textobject keymaps (select)
+local ts_select = require('nvim-treesitter-textobjects.select')
+vim.keymap.set({ 'x', 'o' }, 'af', function() ts_select.select_textobject('@function.outer', 'textobjects') end)
+vim.keymap.set({ 'x', 'o' }, 'if', function() ts_select.select_textobject('@function.inner', 'textobjects') end)
+vim.keymap.set({ 'x', 'o' }, 'ac', function() ts_select.select_textobject('@class.outer', 'textobjects') end)
+vim.keymap.set({ 'x', 'o' }, 'ic', function() ts_select.select_textobject('@class.inner', 'textobjects') end)
+
+-- Textobject keymaps (move)
+local ts_move = require('nvim-treesitter-textobjects.move')
+vim.keymap.set('n', ']m',  function() ts_move.goto_next_start('@function.outer') end)
+vim.keymap.set('n', ']]',  function() ts_move.goto_next_start('@class.outer') end)
+vim.keymap.set('n', ']M',  function() ts_move.goto_next_end('@function.outer') end)
+vim.keymap.set('n', '][',  function() ts_move.goto_next_end('@class.outer') end)
+vim.keymap.set('n', '[m',  function() ts_move.goto_previous_start('@function.outer') end)
+vim.keymap.set('n', '[[',  function() ts_move.goto_previous_start('@class.outer') end)
+vim.keymap.set('n', '[M',  function() ts_move.goto_previous_end('@function.outer') end)
+vim.keymap.set('n', '[]',  function() ts_move.goto_previous_end('@class.outer') end)
 
 -- Diagnostic keymaps
 vim.api.nvim_set_keymap('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>an', '<cmd>lua vim.diagnostic.goto_next({ severity = "error" })<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.jump({count = -1})<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.jump({count = 1})<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>an', '<cmd>lua vim.diagnostic.jump({count = 1, severity = vim.diagnostic.severity.ERROR})<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', { noremap = true, silent = true })
 
 -- LSP settings
-local lspconfig = require 'lspconfig'
-local on_attach = function(_, bufnr)
-  local opts = { remap = false, silent = true, buffer = bufnr }
 
-  -- TODO (kyle): could reuse this in a lot of places
-  local map = function(keys, func, desc, mode)
-    mode = mode or 'n'
-    vim.keymap.set(mode, keys, func, { remap = false, silent = true, buffer = bufnr, desc = 'LSP: ' .. desc })
-  end
+-- Keymaps set on attach
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(args)
+    local bufnr = args.buf
+    local opts = { remap = false, silent = true, buffer = bufnr }
+    local map = function(keys, func, desc, mode)
+      mode = mode or 'n'
+      vim.keymap.set(mode, keys, func, { remap = false, silent = true, buffer = bufnr, desc = 'LSP: ' .. desc })
+    end
 
-  vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-  -- vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-  vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-  vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  vim.keymap.set('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-  vim.keymap.set('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-  vim.keymap.set('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-  vim.keymap.set('n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-  vim.keymap.set('n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  vim.keymap.set('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  vim.keymap.set('n', '<leader>gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  vim.keymap.set({'n', 'v'}, '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-  vim.keymap.set('n', '<leader>so', [[<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>]], opts)
-  vim.keymap.set({'n', 'v'}, '<leader>f', '<cmd>lua vim.lsp.buf.format({ async = false })<CR>', opts)
-  vim.cmd [[ command! Format execute 'lua vim.lsp.buf.formatting()' ]]
-end
+    vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+    -- vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+    map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+    vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+    vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+    vim.keymap.set('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+    vim.keymap.set('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+    vim.keymap.set('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+    vim.keymap.set('n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+    vim.keymap.set('n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+    vim.keymap.set('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+    vim.keymap.set('n', '<leader>gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+    vim.keymap.set({'n', 'v'}, '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+    vim.keymap.set('n', '<leader>so', [[<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>]], opts)
+    vim.keymap.set({'n', 'v'}, '<leader>f', '<cmd>lua vim.lsp.buf.format({ async = false })<CR>', opts)
+    vim.cmd [[ command! Format execute 'lua vim.lsp.buf.format()' ]]
+  end,
+})
 
 -- nvim-cmp supports additional completion capabilities
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
--- Enable the following language servers
-local servers = { 'rust_analyzer', 'gopls', 'lua_ls' }
-for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    on_attach = on_attach,
-    capabilities = capabilities,
-  }
-end
+-- Apply capabilities to all servers
+vim.lsp.config('*', { capabilities = capabilities })
 
-lspconfig.denols.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  root_dir = lspconfig.util.root_pattern("deno.json"),
-	init_options = {
-		config = "deno.json",
-		importMap = "import_map.json",
-		lint = true,
-	},
-}
+-- Configure servers
+vim.lsp.config('denols', {
+  root_dir = function(fname) return vim.fs.root(fname, { 'deno.json' }) end,
+  init_options = {
+    config = "deno.json",
+    importMap = "import_map.json",
+    lint = true,
+  },
+})
 
-lspconfig.ts_ls.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  cmd = { 'typescript-language-server',  '--stdio' },
+vim.lsp.config('ts_ls', {
+  cmd = { 'typescript-language-server', '--stdio' },
   init_options = {
     hostInfo = "neovim",
     maxTsServerMemory = 8192,
   },
-  root_dir = lspconfig.util.root_pattern("tsconfig.json"),
-}
+  root_dir = function(fname) return vim.fs.root(fname, { 'tsconfig.json' }) end,
+})
 
--- Example custom server
--- Make runtime files discoverable to the server
-local runtime_path = vim.split(package.path, ';')
-table.insert(runtime_path, 'lua/?.lua')
-table.insert(runtime_path, 'lua/?/init.lua')
+vim.lsp.enable({ 'rust_analyzer', 'gopls', 'lua_ls', 'denols', 'ts_ls' })
 
 -- luasnip setup
 local luasnip = require 'luasnip'
