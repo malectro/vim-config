@@ -32,7 +32,10 @@ vim.o.completeopt = 'menuone,noselect'
 require('lualine').setup {
   options = {
     icons_enabled = false,
-    theme = 'OuterSunset',
+    -- OuterSunset ships a colorscheme but no lualine theme, so this was
+    -- silently falling back to 'auto'. Say so explicitly; 'auto' derives
+    -- the statusline palette from the active colorscheme.
+    theme = 'auto',
     component_separators = '|',
     section_separators = '',
   },
@@ -130,8 +133,23 @@ vim.api.nvim_set_keymap('n', '<leader>?', [[<cmd>lua require('telescope.builtin'
 vim.api.nvim_set_keymap('n', '<leader>ee', [[<cmd>lua require('telescope.builtin').diagnostics()<CR>]], { noremap = true, silent = true })
 
 -- Treesitter configuration
--- nvim-treesitter v1.x: highlight and indent are enabled by default.
--- Parsers must be installed manually via :TSInstall
+-- nvim-treesitter's main branch does NOT enable highlight/indent for you:
+-- parsers are installed explicitly and highlighting is started per buffer.
+require('nvim-treesitter').install {
+  'bash', 'c', 'css', 'go', 'gomod', 'html', 'javascript', 'jsdoc', 'json',
+  'lua', 'markdown', 'markdown_inline', 'python', 'query', 'rust', 'toml',
+  'tsx', 'typescript', 'vim', 'vimdoc', 'yaml',
+}
+
+-- Only take over indentexpr when a parser actually started, otherwise
+-- filetypes with no parser get an indentexpr that can never resolve.
+vim.api.nvim_create_autocmd('FileType', {
+  callback = function()
+    if pcall(vim.treesitter.start) then
+      vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    end
+  end,
+})
 
 -- Textobject config (lookahead, set_jumps)
 require('nvim-treesitter-textobjects').setup {
@@ -159,9 +177,9 @@ vim.keymap.set('n', '[]',  function() ts_move.goto_previous_end('@class.outer') 
 
 -- Diagnostic keymaps
 vim.api.nvim_set_keymap('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.jump({count = -1})<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.jump({count = 1})<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>an', '<cmd>lua vim.diagnostic.jump({count = 1, severity = vim.diagnostic.severity.ERROR})<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.jump({count = -1, float = true})<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.jump({count = 1, float = true})<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>an', '<cmd>lua vim.diagnostic.jump({count = 1, float = true, severity = vim.diagnostic.severity.ERROR})<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', { noremap = true, silent = true })
 
 -- LSP settings
@@ -204,7 +222,7 @@ vim.lsp.config('*', { capabilities = capabilities })
 
 -- Configure servers
 vim.lsp.config('denols', {
-  root_dir = function(fname) return vim.fs.root(fname, { 'deno.json' }) end,
+  root_markers = { 'deno.json' },
   init_options = {
     config = "deno.json",
     importMap = "import_map.json",
@@ -218,7 +236,7 @@ vim.lsp.config('ts_ls', {
     hostInfo = "neovim",
     maxTsServerMemory = 8192,
   },
-  root_dir = function(fname) return vim.fs.root(fname, { 'tsconfig.json' }) end,
+  root_markers = { 'tsconfig.json' },
 })
 
 vim.lsp.enable({ 'rust_analyzer', 'gopls', 'lua_ls', 'denols', 'ts_ls' })

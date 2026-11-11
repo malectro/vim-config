@@ -52,7 +52,9 @@ vnoremap <C-c> "*y
 " :autocmd FileType qf nmap <buffer> <cr> <cr>:lcl<cr>
 
 " colorscheme molokai
-colorscheme OuterSunset
+" OuterSunset is a lazy-managed plugin, so it is not on the runtimepath
+" yet at this point (E185). kickstart.lua sets it after plugins load.
+" colorscheme OuterSunset
 if has('termguicolors')
   set t_Co=256
   set termguicolors
